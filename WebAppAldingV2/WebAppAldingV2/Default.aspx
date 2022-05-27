@@ -18,7 +18,7 @@
                         <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" 
                             ToolTip="For the Password to be valid it is necessary: Field cannot be empty.
                             length = 8, must have at least 2 upper case, 3 special characters and 1 number."></asp:TextBox>
-                         <asp:CheckBox ID="chbChangePassword" runat="server" OnCheckedChanged="chbChangePassword_CheckedChanged" /><label>&nbsp;Change</label>
+                         <div id="dvChangePassword" runat="server" visible="false"><asp:CheckBox ID="chbChangePassword" runat="server" OnCheckedChanged="chbChangePassword_CheckedChanged" /><label>&nbsp;Change</label></div>
                         <div id="PasswordAlert" class="alert-danger" runat="server" visible="false">
                             <p>For the Password to be valid it is necessary:
                                 Field cannot be empty.

@@ -21,69 +21,16 @@ namespace WebAppAldingV2
             }
         }
 
+        #region "Methods"
         private void LoadGrid(string qrt)
         {
             if (String.IsNullOrEmpty(qrt))
                 qrt = "SELECT [UserAldingId], [UserName], [UserPassword], [UserActive], [UserGender], [UserProvince], [RegistrationDate] FROM [UserAlding]";
-            
+
             sdsUsers.SelectCommand = qrt;
             gvUsers.DataSourceID = "sdsUsers";
             gvUsers.DataBind();
         }
-        
-        protected void btnSave_Click(object sender, EventArgs e)
-        {
-            if (!ValidatePassword(txtPassword.Text))
-            {
-                PasswordAlert.Visible = true;
-            }
-            else
-            {
-                try
-                {
-                    UserAlding ua = new UserAlding();
-                    ua.UserName = txtUserName.Text;
-                    
-                    ua.UserActive = chbActive.Checked;
-                    ua.UserGender = rblGender.SelectedValue;
-                    ua.UserProvince = ddlProvince.SelectedValue;
-                    ua.RegistrationDate = Convert.ToDateTime(txtRegistration.Text);
-
-                    if (hdfUserId.Value == "0")
-                    {
-                        
-                        ua.UserPassword = txtPassword.Text;
-                        db.UserAlding.Add(ua);
-                    }
-                    else
-                    {
-                        int id = Convert.ToInt32(hdfUserId.Value);
-                        ua.UserAldingId = id;
-                        if (chbChangePassword.Checked)
-                            ua.UserPassword = txtPassword.Text;
-                        else
-                            ua.UserPassword = password;
-                        var User = db.UserAlding.Find(id);
-
-                        db.Entry(User).CurrentValues.SetValues(ua);
-                    }
-
-                    db.SaveChanges();
-
-                    sdsUsers.DataBind();
-                    gvUsers.DataBind();
-                    CleanFields();
-
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Successfully! User inserted.');", true);
-                }
-                catch (Exception ex)
-                {
-                    string a = ex.ToString();
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Error in insert User');", true);
-                }
-            }
-        }
-
         protected void CleanFields()
         {
             txtUserName.Text = "";
@@ -94,50 +41,8 @@ namespace WebAppAldingV2
             txtRegistration.Text = "";
             hdfUserId.Value = "0";
             PasswordAlert.Visible = false;
+            dvChangePassword.Visible = false;
         }
-
-        protected void gvUsers_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int idUser = Convert.ToInt32(((Label)gvUsers.Rows[gvUsers.SelectedRow.RowIndex].FindControl("lblIdUser")).Text);
-
-            var User = db.UserAlding.Where(u => u.UserAldingId == idUser).FirstOrDefault();
-
-            hdfUserId.Value = User.UserAldingId.ToString();
-            txtUserName.Text = User.UserName;
-            password = User.UserPassword;
-            txtPassword.Text = User.UserPassword;
-            DateTime dtreg = (DateTime)User.RegistrationDate;
-            txtRegistration.Text = dtreg.ToString("MM/dd/yyyy");
-            ddlProvince.SelectedValue = User.UserProvince;
-            rblGender.SelectedValue = User.UserGender;
-            chbActive.Checked = (bool)User.UserActive;
-        }
-
-        protected void btnClear_Click(object sender, EventArgs e)
-        {
-            CleanFields();
-        }
-
-        protected void btnDelete_Click(object sender, EventArgs e)
-        {
-            if (hdfUserId.Value == "0")
-            {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Select user!');", true);
-            }
-            else
-            {
-                int id = Convert.ToInt32(hdfUserId.Value);
-                var User = db.UserAlding.Find(id);
-
-                db.UserAlding.Remove(User);
-                db.SaveChanges();
-
-                sdsUsers.DataBind();
-                gvUsers.DataBind();
-                CleanFields();
-            }
-        }
-
         public bool ValidatePassword(string pwd, int minLength = 8, int numUpper = 2, int numNumbers = 1, int numSpecial = 2)
         {
 
@@ -165,12 +70,104 @@ namespace WebAppAldingV2
             return true;
         }
 
+        protected void SaveUser()
+        {
+            try
+            {
+                UserAlding ua = new UserAlding();
+                ua.UserName = txtUserName.Text;
+                ua.UserActive = chbActive.Checked;
+                ua.UserGender = rblGender.SelectedValue;
+                ua.UserProvince = ddlProvince.SelectedValue;
+                ua.RegistrationDate = Convert.ToDateTime(txtRegistration.Text);
+
+                if (hdfUserId.Value == "0")
+                {
+                    ua.UserPassword = txtPassword.Text;
+                    db.UserAlding.Add(ua);
+                }
+                else
+                {
+                    int id = Convert.ToInt32(hdfUserId.Value);
+                    ua.UserAldingId = id;
+                    if (chbChangePassword.Checked)
+                        ua.UserPassword = txtPassword.Text;
+                    else
+                        ua.UserPassword = password;
+                    var User = db.UserAlding.Find(id);
+
+                    db.Entry(User).CurrentValues.SetValues(ua);
+                }
+
+                db.SaveChanges();
+
+                sdsUsers.DataBind();
+                gvUsers.DataBind();
+                CleanFields();
+
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Successfully!');", true);
+            }
+            catch (Exception ex)
+            {
+                string a = ex.ToString();
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Error!!');", true);
+            }
+        }
+        #endregion
+
+        #region "Buttons Actions"
+        protected void btnSave_Click(object sender, EventArgs e)
+        {
+            if (hdfUserId.Value == "0")
+            {
+                if (!ValidatePassword(txtPassword.Text))
+                {
+                    PasswordAlert.Visible = true;
+                }
+                else
+                {
+                    SaveUser();
+                }
+            }
+            else
+            {
+                if (chbChangePassword.Checked == false)
+                    SaveUser();
+                else if(!ValidatePassword(txtPassword.Text))
+                    PasswordAlert.Visible = true;
+                else
+                    SaveUser();
+            }
+        }
+        protected void btnClear_Click(object sender, EventArgs e)
+        {
+            CleanFields();
+        }
+        protected void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (hdfUserId.Value == "0")
+            {
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Select user!');", true);
+            }
+            else
+            {
+                int id = Convert.ToInt32(hdfUserId.Value);
+                var User = db.UserAlding.Find(id);
+
+                db.UserAlding.Remove(User);
+                db.SaveChanges();
+
+                sdsUsers.DataBind();
+                gvUsers.DataBind();
+                CleanFields();
+            }
+        }
         protected void btnSearch_Click(object sender, EventArgs e)
         {
             string query = "SELECT UserAldingId, UserName, UserPassword, UserActive, UserGender, UserProvince, RegistrationDate FROM UserAlding ";
             query = query + "WHERE UserActive = '" + chbSearch.Checked.ToString() + "' ";
-            
-            if(!String.IsNullOrEmpty(txtSearch.Text))
+
+            if (!String.IsNullOrEmpty(txtSearch.Text))
                 query = query + " OR UserName LIKE '%" + txtSearch.Text + "%'";
 
             if (!String.IsNullOrEmpty(rblGenderSearch.SelectedValue))
@@ -187,7 +184,29 @@ namespace WebAppAldingV2
 
             LoadGrid(query);
         }
+        #endregion
 
+        #region "Grid Actions"
+        protected void gvUsers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int idUser = Convert.ToInt32(((Label)gvUsers.Rows[gvUsers.SelectedRow.RowIndex].FindControl("lblIdUser")).Text);
+
+            var User = db.UserAlding.Where(u => u.UserAldingId == idUser).FirstOrDefault();
+
+            hdfUserId.Value = User.UserAldingId.ToString();
+            txtUserName.Text = User.UserName;
+            password = User.UserPassword;
+            txtPassword.Text = User.UserPassword;
+            dvChangePassword.Visible = true;
+            DateTime dtreg = (DateTime)User.RegistrationDate;
+            txtRegistration.Text = dtreg.ToString("MM/dd/yyyy");
+            ddlProvince.SelectedValue = User.UserProvince;
+            rblGender.SelectedValue = User.UserGender;
+            chbActive.Checked = (bool)User.UserActive;
+        }
+        #endregion
+
+        #region "Actions"
         protected void chbChangePassword_CheckedChanged(object sender, EventArgs e)
         {
             if (chbChangePassword.Checked)
@@ -195,5 +214,22 @@ namespace WebAppAldingV2
             else
                 txtPassword.Enabled = false;
         }
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
