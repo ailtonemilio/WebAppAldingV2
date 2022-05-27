@@ -37,21 +37,29 @@
         </div>
         <div class="form-group">
             <label>Registration</label>
-            <asp:TextBox ID="txtRegistration" runat="server" CssClass="form-control"></asp:TextBox>
+            <div class="input-group date">
+                <div class="input-group-addon">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                </div>
+                 <asp:TextBox ID="txtRegistration" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
             <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ErrorMessage="Field Empty" ControlToValidate="txtRegistration" ForeColor="#FF3300"></asp:RequiredFieldValidator>
         </div>
         <div class="form-group">
             <asp:Button ID="btnSave" CssClass="btn btn-success" runat="server" Text="Save" OnClick="btnSave_Click" />
         </div>
-        <div class="form-group">  
-            <label for="usr">Birthdate:</label>                      
-            <div class='input-group date' id='birthdate'>
-                <input type='text' class="form-control" />
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-            </div>
-        </div>
+       
+        
+        <script type="text/javascript">
+            $(function () {
+                $('[id*=txtRegistration]').datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    format: "mm/dd/yyyy",
+                    language: "en"
+                });
+            });
+        </script>
     </div>
 
     <div class="row">
@@ -70,16 +78,4 @@
         <asp:SqlDataSource ID="sdsUsers" runat="server" ConnectionString="<%$ ConnectionStrings:CRUDModel %>" SelectCommand="SELECT [UserAldingId], [UserName], [UserPassword], [UserActive], [UserGender], [UserProvince], [RegistrationDate] FROM [UserAlding]"></asp:SqlDataSource>
     </div>
 
-  
-    <script type="text/javascript">
-    $(document).ready(function () {            
-        $("#birthdate").datepicker({
-            autoclose: true,
-            format: 'yyyy-mm-dd',
-            todayHighlight: true,
-            clearBtn: true,
-            orientation: 'bottom'
-        });
-    });
-    </script>
 </asp:Content>
