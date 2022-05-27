@@ -4,7 +4,7 @@
     <br />
     <div class="row">
         <div class="panel panel-default">
-          <div class="panel-heading">Panel heading without title</div>
+          <div class="panel-heading">CRUD User</div>
           <div class="panel-body">
                 <div class="col-lg-4 form-group">
                     <asp:HiddenField ID="hdfUserId" runat="server" Value="0" />
@@ -15,10 +15,15 @@
                     </div>
                     <div>
                         <label>Password</label>
-                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ErrorMessage="Field Empty" ControlToValidate="txtPassword" ForeColor="#FF3300" ValidationGroup="AddUser"></asp:RequiredFieldValidator>
+                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" 
+                            ToolTip="For the Password to be valid it is necessary: Field cannot be empty.
+                            length = 8, must have at least 2 upper case, 3 special characters and 1 number."></asp:TextBox>
+                         <asp:CheckBox ID="chbChangePassword" runat="server" OnCheckedChanged="chbChangePassword_CheckedChanged" /><label>&nbsp;Change</label>
                         <div id="PasswordAlert" class="alert-danger" runat="server" visible="false">
-                            Password field should be validated for length = 8, must have at least 2 upper case, 3 special characters and 1 number.
+                            <p>For the Password to be valid it is necessary:
+                                Field cannot be empty.
+                                length = 8, must have at least 2 upper case, 3 special characters and 1 number.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -69,15 +74,47 @@
     </div>
     
     <div class="row">
+        
+        <div class="col-lg-2">
+            <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" title="Name User"></asp:TextBox>
+        </div>
+        <div class="col-lg-2">
+            <asp:DropDownList ID="ddlSearchPro" runat="server" CssClass="form-control">
+                <asp:ListItem></asp:ListItem>
+                <asp:ListItem>AB</asp:ListItem>
+                <asp:ListItem>BC</asp:ListItem>
+                <asp:ListItem>ON</asp:ListItem>
+                <asp:ListItem>QC</asp:ListItem>
+        </asp:DropDownList>
+        </div>
+        <div class="col-lg-2">
+            <asp:CheckBox ID="chbSearch" runat="server" /><label>&nbsp;Active</label>
+        </div>
+        <div class="col-lg-2">
+            <asp:RadioButtonList ID="rblGenderSearch" runat="server" RepeatDirection="Horizontal">
+            <asp:ListItem Value="Male">&nbsp;Male&nbsp;&nbsp;</asp:ListItem>
+            <asp:ListItem Value="Female">&nbsp;Female&nbsp;&nbsp;</asp:ListItem>
+            <asp:ListItem>&nbsp;Other</asp:ListItem>
+        </asp:RadioButtonList>
+        </div>
+        <div class="col-lg-2">
+        <div class="input-group date">
+            <div class="input-group-addon">
+                <i class="glyphicon glyphicon-calendar"></i>
+            </div>
+            <asp:TextBox ID="txtRegistrationSearch" runat="server" CssClass="form-control"></asp:TextBox>
+        </div>
+        </div>
+        <div class="col-lg-2">
+            <button type="button" class="btn btn-default" id="btnSearch" OnServerClick="btnSearch_Click" runat="server" ><span class="glyphicon glyphicon-zoom-in"></span>&nbsp;&nbsp;Search</button>
+        </div>
+              
+    </div>
+
+    <div class="row">
          <div class="panel panel-default">
-          <div class="panel-heading">
-              <div class="form-inline">
-                    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control"></asp:TextBox>
-                    <button type="button" class="btn btn-default" id="btnSearch" OnServerClick="btnSearch_Click" runat="server" ><span class="glyphicon glyphicon-zoom-in"></span>&nbsp;&nbsp;Search</button>
-              </div>
-          </div>
           <div class="panel-body">
-                <asp:GridView ID="gvUsers" runat="server" class="table table-bordered table-condensed table-responsive table-hover " AutoGenerateColumns="False" DataKeyNames="UserAldingId" DataSourceID="sdsUsers" AllowPaging="True" AllowSorting="True" OnSelectedIndexChanged="gvUsers_SelectedIndexChanged">
+                <asp:GridView ID="gvUsers" runat="server" class="table table-bordered table-condensed table-responsive table-hover " AutoGenerateColumns="False" DataKeyNames="UserAldingId" AllowPaging="True" AllowSorting="True" OnSelectedIndexChanged="gvUsers_SelectedIndexChanged">
                 <Columns>
                     <asp:CommandField ShowSelectButton="True" ButtonType="Image" EditImageUrl="~/Images/addlist.png" SelectImageUrl="~/Images/addlist.png" >
                     <ItemStyle HorizontalAlign="Center" VerticalAlign="Middle" />
@@ -106,16 +143,36 @@
                 </Columns>
                 <SelectedRowStyle Font-Bold="True" VerticalAlign="Bottom" BackColor="Silver"/>
             </asp:GridView>
-            <asp:SqlDataSource ID="sdsUsers" runat="server" ConnectionString="<%$ ConnectionStrings:CRUDModel %>" SelectCommand="SELECT [UserAldingId], [UserName], [UserPassword], [UserActive], [UserGender], [UserProvince], [RegistrationDate] FROM [UserAlding]"></asp:SqlDataSource>
+            <asp:SqlDataSource ID="sdsUsers" runat="server" ConnectionString="<%$ ConnectionStrings:CRUDModel %>" SelectCommand="SELECT [UserAldingId], [UserName], [UserPassword], [UserActive], [UserGender], [UserProvince], [RegistrationDate] FROM [UserAlding]">
+            </asp:SqlDataSource>
+
+              <asp:SqlDataSource ID="sdsUsersSearch" runat="server" ConnectionString="<%$ ConnectionStrings:CRUDModel %>" SelectCommand="SELECT [UserAldingId], [UserName], [UserPassword], [UserActive], [UserGender], [UserProvince], [RegistrationDate] FROM [UserAlding] WHERE (([UserName] LIKE '%' + @UserName + '%') OR ([UserProvince] LIKE '%' + @UserProvince + '%'))">
+                <SelectParameters>
+                    <asp:ControlParameter ControlID="txtSearch" Name="UserName" PropertyName="Text" Type="String" />
+                    <asp:ControlParameter ControlID="txtSearch" Name="UserProvince" PropertyName="Text" Type="String" />
+                </SelectParameters>
+                </asp:SqlDataSource>
           </div>
+
         </div>
         
     </div>
 
+    
 
     <script type="text/javascript">
         $(function () {
             $('[id*=txtRegistration]').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                format: "mm/dd/yyyy",
+                language: "en"
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('[id*=txtRegistrationSearch]').datepicker({
                 changeMonth: true,
                 changeYear: true,
                 format: "mm/dd/yyyy",
