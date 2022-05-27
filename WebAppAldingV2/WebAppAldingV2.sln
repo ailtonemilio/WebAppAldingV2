@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppAldingV2", "WebAppAldingV2\WebAppAldingV2.csproj", "{07C0C311-6BD1-4B61-B415-DFC079AF9B07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07C0C311-6BD1-4B61-B415-DFC079AF9B07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07C0C311-6BD1-4B61-B415-DFC079AF9B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07C0C311-6BD1-4B61-B415-DFC079AF9B07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07C0C311-6BD1-4B61-B415-DFC079AF9B07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {65A76ACF-603C-430E-BDF2-A0491D66F693}
+	EndGlobalSection
+EndGlobal
